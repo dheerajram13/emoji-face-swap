@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "FaceSwap AI",
+    "slug": "emoji-face-swap",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.faceswapai.app"
+    },
+    "web": {},
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Emoji Face Swap to access your camera to detect faces and apply emoji overlays."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Emoji Face Swap to access your photos to save and share emoji-swapped images.",
+          "savePhotosPermission": "Allow Emoji Face Swap to save photos to your gallery."
+        }
+      ]
+    ]
+  }
+} 
