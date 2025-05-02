@@ -12,7 +12,7 @@ import {
 import { Camera } from 'expo-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../assets/styles/theme';
+import { colors } from '../assets/styles/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -111,12 +111,12 @@ const CameraScreen = ({ navigation }) => {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Ionicons name="arrow-back" size={24} color={theme.colors.white} />
+            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Camera</Text>
         </View>
         <View style={styles.webPlaceholder}>
-          <Ionicons name="camera" size={64} color={theme.colors.textSecondary} />
+          <Ionicons name="camera" size={64} color={colors.textSecondary} />
           <Text style={styles.webPlaceholderText}>
             Camera access is limited on web. Please use the mobile app for full camera functionality.
           </Text>
@@ -138,7 +138,7 @@ const CameraScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color={theme.colors.white} />
+          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Camera</Text>
         <TouchableOpacity
@@ -151,7 +151,7 @@ const CameraScreen = ({ navigation }) => {
           <Ionicons
             name={getFlashIcon()}
             size={24}
-            color={theme.colors.white}
+            color={colors.textPrimary}
           />
         </TouchableOpacity>
       </View>
@@ -181,7 +181,7 @@ const CameraScreen = ({ navigation }) => {
                 <Ionicons
                   name="search"
                   size={16}
-                  color={theme.colors.white}
+                  color={colors.textPrimary}
                   style={styles.statusIcon}
                 />
                 <Text style={styles.statusText}>
@@ -192,7 +192,7 @@ const CameraScreen = ({ navigation }) => {
 
             {!isCameraReady && (
               <View style={styles.loadingOverlay}>
-                <ActivityIndicator size="large" color={theme.colors.white} />
+                <ActivityIndicator size="large" color={colors.textPrimary} />
                 <Text style={styles.loadingText}>Initializing camera...</Text>
               </View>
             )}
@@ -226,7 +226,7 @@ const CameraScreen = ({ navigation }) => {
               <Ionicons
                 name="camera-reverse"
                 size={24}
-                color={theme.colors.white}
+                color={colors.textPrimary}
               />
             </TouchableOpacity>
 
@@ -250,27 +250,27 @@ const CameraScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing.md,
+    padding: 16,
   },
   backButton: {
-    padding: theme.spacing.sm,
+    padding: 16,
   },
   headerTitle: {
-    ...theme.typography.heading,
-    color: theme.colors.white,
+    fontSize: 18,
+    color: colors.textPrimary,
   },
   flashButton: {
-    padding: theme.spacing.sm,
+    padding: 16,
   },
   flashButtonActive: {
-    backgroundColor: theme.colors.accentPrimary,
-    borderRadius: theme.borderRadius.circle,
+    backgroundColor: colors.accent,
+    borderRadius: 8,
   },
   cameraContainer: {
     flex: 1,
@@ -294,30 +294,30 @@ const styles = StyleSheet.create({
     height: width * 0.7,
     borderRadius: width * 0.35,
     borderWidth: 2,
-    borderColor: theme.colors.white,
+    borderColor: colors.white,
     opacity: 0.5,
   },
   faceCircleDetected: {
-    borderColor: theme.colors.accentPrimary,
+    borderColor: colors.accent,
     opacity: 1,
   },
   faceDetectionStatus: {
     position: 'absolute',
-    bottom: theme.spacing.xl,
+    bottom: 24,
     left: 0,
     right: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: theme.spacing.sm,
+    padding: 8,
   },
   statusIcon: {
-    marginRight: theme.spacing.xs,
+    marginRight: 8,
   },
   statusText: {
-    color: theme.colors.white,
-    ...theme.typography.body,
+    color: colors.white,
+    fontSize: 16,
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -326,34 +326,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: theme.colors.white,
-    marginTop: theme.spacing.md,
-    ...theme.typography.body,
+    color: colors.white,
+    marginTop: 16,
+    fontSize: 16,
   },
   controls: {
-    padding: theme.spacing.md,
+    padding: 16,
   },
   previewControls: {
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   retakeButton: {
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.button,
-    backgroundColor: theme.colors.secondary,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: colors.secondary,
   },
   retakeButtonText: {
-    color: theme.colors.white,
-    ...theme.typography.button,
+    color: colors.white,
+    fontSize: 16,
   },
   useButton: {
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.button,
-    backgroundColor: theme.colors.accentPrimary,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: colors.accent,
   },
   useButtonText: {
-    color: theme.colors.white,
-    ...theme.typography.button,
+    color: colors.white,
+    fontSize: 16,
   },
   cameraControls: {
     flexDirection: 'row',
@@ -361,13 +361,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   flipButton: {
-    padding: theme.spacing.md,
+    padding: 16,
   },
   captureButton: {
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: theme.colors.white,
+    backgroundColor: colors.white,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -376,42 +376,42 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     borderWidth: 2,
-    borderColor: theme.colors.primary,
+    borderColor: colors.primary,
   },
   flashModeIndicator: {
-    padding: theme.spacing.md,
+    padding: 16,
   },
   flashModeText: {
-    color: theme.colors.white,
-    ...theme.typography.caption,
+    color: colors.white,
+    fontSize: 14,
   },
   errorText: {
-    color: theme.colors.error,
-    ...theme.typography.body,
+    color: colors.error,
+    fontSize: 16,
     textAlign: 'center',
-    marginTop: theme.spacing.xl,
+    marginTop: 24,
   },
   webPlaceholder: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: theme.spacing.xl,
+    padding: 24,
   },
   webPlaceholderText: {
-    color: theme.colors.textSecondary,
-    ...theme.typography.body,
+    color: colors.textSecondary,
+    fontSize: 16,
     textAlign: 'center',
-    marginTop: theme.spacing.md,
-    marginBottom: theme.spacing.xl,
+    marginTop: 16,
+    marginBottom: 24,
   },
   webButton: {
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.button,
-    backgroundColor: theme.colors.accentPrimary,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: colors.accent,
   },
   webButtonText: {
-    color: theme.colors.white,
-    ...theme.typography.button,
+    color: colors.white,
+    fontSize: 16,
   },
 });
 

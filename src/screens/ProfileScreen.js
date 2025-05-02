@@ -1,17 +1,8 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-  FlatList,
-} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../assets/styles/theme';
+import { colors } from '../assets/styles/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -57,11 +48,11 @@ const ProfileScreen = ({ navigation }) => {
       <Image source={{ uri: item.image }} style={styles.postImage} />
       <View style={styles.postStats}>
         <View style={styles.postStat}>
-          <Ionicons name="heart" size={16} color={theme.colors.textSecondary} />
+          <Ionicons name="heart" size={16} color={colors.textSecondary} />
           <Text style={styles.statNumber}>{item.likes.toLocaleString()}</Text>
         </View>
         <View style={styles.postStat}>
-          <Ionicons name="chatbubble" size={16} color={theme.colors.textSecondary} />
+          <Ionicons name="chatbubble" size={16} color={colors.textSecondary} />
           <Text style={styles.statNumber}>{item.comments.toLocaleString()}</Text>
         </View>
       </View>
@@ -75,13 +66,13 @@ const ProfileScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color={theme.colors.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.closeButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="close" size={24} color={theme.colors.textPrimary} />
+          <Ionicons name="close" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollView}>
@@ -95,7 +86,7 @@ const ProfileScreen = ({ navigation }) => {
               <Image source={{ uri: user.avatar }} style={styles.avatar} />
               {editMode && (
                 <View style={styles.editIconContainer}>
-                  <Ionicons name="pencil" size={16} color={theme.colors.white} />
+                  <Ionicons name="pencil" size={16} color={colors.white} />
                 </View>
               )}
             </TouchableOpacity>
@@ -146,7 +137,7 @@ const ProfileScreen = ({ navigation }) => {
           style={styles.settingsButton}
           onPress={() => navigation.navigate('Settings')}
         >
-          <Ionicons name="settings-outline" size={24} color={theme.colors.textSecondary} />
+          <Ionicons name="settings-outline" size={24} color={colors.textSecondary} />
           <Text style={styles.settingsButtonText}>Settings</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -157,21 +148,21 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing.md,
+    padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    borderBottomColor: colors.border,
   },
   backButton: {
-    marginRight: theme.spacing.md,
+    marginRight: 16,
   },
   closeButton: {
-    marginLeft: theme.spacing.md,
+    marginLeft: 16,
   },
   scrollView: {
     flex: 1,
@@ -179,15 +170,15 @@ const styles = StyleSheet.create({
   profileHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingVertical: theme.spacing.lg,
-    paddingHorizontal: theme.spacing.md,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
   },
   avatarContainer: {
     width: 120,
     height: 120,
     borderRadius: 60,
     overflow: 'hidden',
-    marginRight: theme.spacing.lg,
+    marginRight: 16,
   },
   avatar: {
     width: '100%',
@@ -200,7 +191,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: theme.colors.accentPrimary,
+    backgroundColor: colors.accent,
     borderRadius: 12,
     padding: 4,
     width: 24,
@@ -214,37 +205,37 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.sm,
+    color: colors.textPrimary,
+    marginBottom: 8,
   },
   profileUsername: {
     fontSize: 16,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.sm,
+    color: colors.textPrimary,
+    marginBottom: 8,
   },
   profileBio: {
     fontSize: 14,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.lg,
+    color: colors.textPrimary,
+    marginBottom: 16,
   },
   editProfileButton: {
-    backgroundColor: theme.colors.accentPrimary,
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
+    backgroundColor: colors.accent,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 8,
     alignSelf: 'flex-start',
   },
   editProfileButtonText: {
-    color: theme.colors.white,
+    color: colors.white,
     fontWeight: '500',
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: theme.spacing.md,
+    paddingVertical: 16,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: colors.border,
   },
   statItem: {
     alignItems: 'center',
@@ -252,24 +243,24 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 18,
     fontWeight: '600',
-    color: theme.colors.textPrimary,
+    color: colors.textPrimary,
   },
   statLabel: {
     fontSize: 14,
-    color: theme.colors.textSecondary,
+    color: colors.textSecondary,
   },
   postsContainer: {
-    paddingVertical: theme.spacing.md,
+    paddingVertical: 16,
   },
   postsGrid: {
-    padding: theme.spacing.sm,
+    padding: 8,
   },
   postItem: {
-    width: (width - theme.spacing.sm * 4) / 3,
-    margin: theme.spacing.sm,
+    width: (width - 8 * 4) / 3,
+    margin: 8,
     borderRadius: 8,
     overflow: 'hidden',
-    backgroundColor: theme.colors.card,
+    backgroundColor: colors.white,
   },
   postImage: {
     width: '100%',
@@ -278,7 +269,7 @@ const styles = StyleSheet.create({
   postStats: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: theme.spacing.sm,
+    padding: 8,
   },
   postStat: {
     flexDirection: 'row',
@@ -286,19 +277,19 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: 12,
-    marginLeft: theme.spacing.xs,
-    color: theme.colors.textSecondary,
+    marginLeft: 4,
+    color: colors.textSecondary,
   },
   settingsButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: theme.spacing.md,
+    padding: 16,
     borderTopWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: colors.border,
   },
   settingsButtonText: {
-    marginLeft: theme.spacing.sm,
-    color: theme.colors.textSecondary,
+    marginLeft: 8,
+    color: colors.textSecondary,
   },
 });
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../assets/styles/theme';
+import { colors } from '../assets/styles/colors';
 
 const SettingsScreen = ({ navigation }) => {
   const [settings, setSettings] = useState({
@@ -19,6 +19,12 @@ const SettingsScreen = ({ navigation }) => {
   };
 
   const menuItems = [
+    {
+      title: 'Real-time Animation',
+      description: 'Enable smooth transitions between emojis',
+      key: 'realTimeAnimation',
+      icon: 'flash',
+    },
     {
       title: 'Real-time Animation',
       description: 'Enable smooth transitions between emojis',
@@ -46,13 +52,13 @@ const SettingsScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color={theme.colors.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.closeButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="close" size={24} color={theme.colors.textPrimary} />
+          <Ionicons name="close" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
       </View>
@@ -61,7 +67,7 @@ const SettingsScreen = ({ navigation }) => {
         {menuItems.map((item, index) => (
           <View key={index} style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Ionicons name={item.icon} size={24} color={theme.colors.accentPrimary} />
+              <Ionicons name={item.icon} size={24} color={colors.accentPrimary} />
               <View style={styles.settingText}>
                 <Text style={styles.settingTitle}>{item.title}</Text>
                 <Text style={styles.settingDescription}>{item.description}</Text>
@@ -70,8 +76,8 @@ const SettingsScreen = ({ navigation }) => {
             <Switch
               value={settings[item.key]}
               onValueChange={() => toggleSetting(item.key)}
-              trackColor={{ false: theme.colors.textSecondary + '40', true: theme.colors.accentPrimary }}
-              thumbColor={theme.colors.white}
+              trackColor={{ false: colors.textSecondary + '40', true: colors.accentPrimary }}
+              thumbColor={colors.white}
             />
           </View>
         ))}
@@ -79,17 +85,17 @@ const SettingsScreen = ({ navigation }) => {
         <View style={styles.divider} />
 
         <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="information-circle" size={24} color={theme.colors.accentPrimary} />
+          <Ionicons name="information-circle" size={24} color={colors.accentPrimary} />
           <Text style={styles.menuText}>About</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="chatbubble" size={24} color={theme.colors.accentPrimary} />
+          <Ionicons name="chatbubble" size={24} color={colors.accentPrimary} />
           <Text style={styles.menuText}>Feedback</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="star" size={24} color={theme.colors.accentPrimary} />
+          <Ionicons name="star" size={24} color={colors.accentPrimary} />
           <Text style={styles.menuText}>Rate Us</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -100,77 +106,70 @@ const SettingsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing.md,
+    padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    borderBottomColor: colors.border,
   },
   backButton: {
-    marginRight: theme.spacing.md,
+    marginRight: 16,
   },
   closeButton: {
-    marginLeft: theme.spacing.md,
+    marginLeft: 16,
   },
   title: {
-    ...theme.typography.heading,
-    color: theme.colors.textPrimary,
-    marginLeft: theme.spacing.md,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    marginLeft: 16,
   },
   content: {
     flex: 1,
-    padding: theme.spacing.lg,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: theme.colors.white,
-    padding: theme.spacing.lg,
-    borderRadius: theme.borderRadius.card,
-    marginBottom: theme.spacing.md,
-    ...theme.shadows.light,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   settingInfo: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
   },
   settingText: {
-    marginLeft: theme.spacing.md,
     flex: 1,
+    marginLeft: 12,
   },
   settingTitle: {
-    ...theme.typography.subheading,
-    color: theme.colors.textPrimary,
+    fontSize: 16,
+    color: colors.textPrimary,
   },
   settingDescription: {
-    ...theme.typography.caption,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: 4,
   },
   divider: {
     height: 1,
-    backgroundColor: theme.colors.textSecondary + '20',
-    marginVertical: theme.spacing.lg,
+    backgroundColor: colors.textSecondary + '20',
+    marginVertical: 16,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.white,
-    padding: theme.spacing.lg,
-    borderRadius: theme.borderRadius.card,
-    marginBottom: theme.spacing.md,
-    ...theme.shadows.light,
+    padding: 16,
   },
   menuText: {
-    ...theme.typography.body,
-    color: theme.colors.textPrimary,
-    marginLeft: theme.spacing.md,
+    fontSize: 16,
+    color: colors.textPrimary,
+    marginLeft: 12,
   },
 });
 

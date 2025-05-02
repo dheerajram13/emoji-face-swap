@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Slider from '@react-native-community/slider';
-import { theme } from '../assets/styles/theme';
+import { colors } from '../assets/styles/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -146,11 +146,11 @@ const CreateScreen = ({ navigation, route }) => {
           style={styles.backButton}
           onPress={() => handleNavigation('Home')}
         >
-          <Ionicons name="arrow-back" size={24} color={theme.colors.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create New Swap</Text>
         <TouchableOpacity style={styles.helpButton}>
-          <Ionicons name="help-circle" size={24} color={theme.colors.textPrimary} />
+          <Ionicons name="help-circle" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -161,7 +161,7 @@ const CreateScreen = ({ navigation, route }) => {
               style={styles.uploadArea}
               onPress={handlePhotoUpload}
             >
-              <Ionicons name="camera" size={48} color={theme.colors.accentPrimary} />
+              <Ionicons name="camera" size={48} color={colors.accent} />
               <Text style={styles.uploadText}>Tap to select a photo</Text>
               <Text style={styles.uploadSubtext}>or use one of the options below</Text>
             </TouchableOpacity>
@@ -170,7 +170,7 @@ const CreateScreen = ({ navigation, route }) => {
               <Image source={{ uri: selectedPhoto }} style={styles.previewImage} />
               {isProcessing && (
                 <View style={styles.processingOverlay}>
-                  <ActivityIndicator size="large" color={theme.colors.white} />
+                  <ActivityIndicator size="large" color={colors.white} />
                 </View>
               )}
             </View>
@@ -181,7 +181,7 @@ const CreateScreen = ({ navigation, route }) => {
               style={styles.primaryButton}
               onPress={handleTakePhoto}
             >
-              <Ionicons name="camera" size={20} color={theme.colors.white} />
+              <Ionicons name="camera" size={20} color={colors.white} />
               <Text style={styles.primaryButtonText}>Take Photo</Text>
             </TouchableOpacity>
 
@@ -189,7 +189,7 @@ const CreateScreen = ({ navigation, route }) => {
               style={styles.secondaryButton}
               onPress={handlePhotoUpload}
             >
-              <Ionicons name="image" size={20} color={theme.colors.accentPrimary} />
+              <Ionicons name="image" size={20} color={colors.accent} />
               <Text style={styles.secondaryButtonText}>Upload Photo</Text>
             </TouchableOpacity>
           </View>
@@ -207,11 +207,14 @@ const CreateScreen = ({ navigation, route }) => {
                 key={item.id}
                 style={[
                   styles.emojiItem,
-                  selectedEmoji === item.id && styles.emojiItemSelected,
+                  selectedEmoji === item.id ? styles.emojiItemSelected : styles.emojiItemDefault,
                 ]}
                 onPress={() => setSelectedEmoji(item.id)}
               >
-                <Text style={styles.emojiText}>{item.emoji}</Text>
+                <Text style={[
+                  styles.emojiText,
+                  selectedEmoji === item.id ? styles.emojiTextSelected : styles.emojiTextDefault,
+                ]}>{item.emoji}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -228,7 +231,7 @@ const CreateScreen = ({ navigation, route }) => {
           <View style={styles.sliderContainer}>
             <View style={styles.sliderHeader}>
               <View style={styles.sliderLabel}>
-                <Ionicons name="options" size={20} color={theme.colors.accentPrimary} />
+                <Ionicons name="options" size={20} color={colors.accent} />
                 <Text style={styles.sliderText}>Blend Intensity</Text>
               </View>
               <Text style={styles.sliderValue}>{sliders.blendIntensity}%</Text>
@@ -239,16 +242,16 @@ const CreateScreen = ({ navigation, route }) => {
               maximumValue={100}
               value={sliders.blendIntensity}
               onValueChange={(value) => handleSliderChange(value, 'blendIntensity')}
-              minimumTrackTintColor={theme.colors.accentPrimary}
-              maximumTrackTintColor={theme.colors.textSecondary}
-              thumbTintColor={theme.colors.accentPrimary}
+              minimumTrackTintColor={colors.accent}
+              maximumTrackTintColor={colors.textSecondary}
+              thumbTintColor={colors.accent}
             />
           </View>
 
           <View style={styles.sliderContainer}>
             <View style={styles.sliderHeader}>
               <View style={styles.sliderLabel}>
-                <Ionicons name="happy" size={20} color={theme.colors.accentPrimary} />
+                <Ionicons name="happy" size={20} color={colors.accent} />
                 <Text style={styles.sliderText}>Expression Match</Text>
               </View>
               <Text style={styles.sliderValue}>{sliders.expressionMatch}%</Text>
@@ -259,16 +262,16 @@ const CreateScreen = ({ navigation, route }) => {
               maximumValue={100}
               value={sliders.expressionMatch}
               onValueChange={(value) => handleSliderChange(value, 'expressionMatch')}
-              minimumTrackTintColor={theme.colors.accentPrimary}
-              maximumTrackTintColor={theme.colors.textSecondary}
-              thumbTintColor={theme.colors.accentPrimary}
+              minimumTrackTintColor={colors.accent}
+              maximumTrackTintColor={colors.textSecondary}
+              thumbTintColor={colors.accent}
             />
           </View>
 
           <View style={styles.sliderContainer}>
             <View style={styles.sliderHeader}>
               <View style={styles.sliderLabel}>
-                <Ionicons name="color-palette" size={20} color={theme.colors.accentPrimary} />
+                <Ionicons name="color-palette" size={20} color={colors.accent} />
                 <Text style={styles.sliderText}>Color Adjustment</Text>
               </View>
               <Text style={styles.sliderValue}>{sliders.colorAdjustment}%</Text>
@@ -279,9 +282,9 @@ const CreateScreen = ({ navigation, route }) => {
               maximumValue={100}
               value={sliders.colorAdjustment}
               onValueChange={(value) => handleSliderChange(value, 'colorAdjustment')}
-              minimumTrackTintColor={theme.colors.accentPrimary}
-              maximumTrackTintColor={theme.colors.textSecondary}
-              thumbTintColor={theme.colors.accentPrimary}
+              minimumTrackTintColor={colors.accent}
+              maximumTrackTintColor={colors.textSecondary}
+              thumbTintColor={colors.accent}
             />
           </View>
         </View>
@@ -323,59 +326,59 @@ const CreateScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.white,
+    padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.textSecondary,
+    borderBottomColor: colors.border,
   },
   backButton: {
-    padding: theme.spacing.sm,
+    padding: 8,
   },
   headerTitle: {
-    ...theme.typography.heading,
-    color: theme.colors.textPrimary,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
   },
   helpButton: {
-    padding: theme.spacing.sm,
+    padding: 8,
   },
   content: {
     flex: 1,
   },
   photoInputContainer: {
-    padding: theme.spacing.md,
+    padding: 16,
   },
   uploadArea: {
     height: width * 0.8,
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.card,
+    backgroundColor: colors.white,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: theme.colors.accentPrimary,
+    borderColor: colors.accent,
     borderStyle: 'dashed',
-    marginBottom: theme.spacing.md,
+    marginBottom: 16,
   },
   uploadText: {
-    ...theme.typography.subheading,
-    color: theme.colors.textPrimary,
-    marginTop: theme.spacing.md,
+    fontSize: 18,
+    color: colors.textPrimary,
+    marginTop: 16,
   },
   uploadSubtext: {
-    ...theme.typography.caption,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: 4,
   },
   photoPreview: {
     height: width * 0.8,
-    borderRadius: theme.borderRadius.card,
+    borderRadius: 16,
     overflow: 'hidden',
-    marginBottom: theme.spacing.md,
+    marginBottom: 16,
   },
   previewImage: {
     width: '100%',
@@ -390,104 +393,121 @@ const styles = StyleSheet.create({
   photoButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: theme.spacing.md,
+    gap: 16,
   },
   primaryButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.accentPrimary,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.button,
-    gap: theme.spacing.xs,
+    backgroundColor: colors.accent,
+    padding: 16,
+    borderRadius: 8,
+    gap: 4,
   },
   primaryButtonText: {
-    ...theme.typography.button,
-    color: theme.colors.white,
+    fontSize: 16,
+    color: colors.white,
   },
   secondaryButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.white,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.button,
+    backgroundColor: colors.white,
+    padding: 16,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: theme.colors.accentPrimary,
-    gap: theme.spacing.xs,
+    borderColor: colors.accent,
+    gap: 4,
   },
   secondaryButtonText: {
-    ...theme.typography.button,
-    color: theme.colors.accentPrimary,
+    fontSize: 16,
+    color: colors.accent,
   },
   emojiSection: {
-    padding: theme.spacing.md,
+    padding: 16,
   },
   sectionTitle: {
-    ...theme.typography.subheading,
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.md,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    marginBottom: 16,
   },
-  emojiScroll: {
-    marginBottom: theme.spacing.md,
+  emojiList: {
+    flexDirection: 'row',
+    gap: 16,
+    flexWrap: 'wrap',
+    padding: 8,
   },
   emojiItem: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: theme.colors.white,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.white,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: theme.spacing.md,
-    ...theme.shadows.light,
+    borderWidth: 1,
   },
   emojiItemSelected: {
-    borderWidth: 2,
-    borderColor: theme.colors.accentPrimary,
+    borderColor: colors.accent,
+  },
+  emojiItemDefault: {
+    borderColor: colors.border,
   },
   emojiText: {
     fontSize: 32,
   },
-  adjustmentsSection: {
-    padding: theme.spacing.md,
+  emojiTextSelected: {
+    color: colors.accent,
   },
-  adjustmentsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
+  emojiTextDefault: {
+    color: colors.textSecondary,
   },
-  resetButton: {
-    ...theme.typography.button,
-    color: theme.colors.accentPrimary,
+  sliderSection: {
+    padding: 16,
+  },
+  sliderTitle: {
+    fontSize: 18,
+    color: colors.textPrimary,
+    marginBottom: 8,
   },
   sliderContainer: {
-    marginBottom: theme.spacing.lg,
-  },
-  sliderHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.xs,
-  },
-  sliderLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.xs,
-  },
-  sliderText: {
-    ...theme.typography.body,
-    color: theme.colors.textPrimary,
-  },
-  sliderValue: {
-    ...theme.typography.caption,
-    color: theme.colors.textSecondary,
+    padding: 8,
   },
   slider: {
-    width: '100%',
     height: 40,
+  },
+  sliderValue: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    marginTop: 8,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  resetButton: {
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: colors.secondary,
+  },
+  resetButtonText: {
+    fontSize: 16,
+    color: colors.white,
+  },
+  createButton: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: colors.accent,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  createButtonText: {
+    fontSize: 16,
+    color: colors.white,
   },
   modalOverlay: {
     flex: 1,
@@ -496,45 +516,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.card,
-    padding: theme.spacing.lg,
-    width: '80%',
-    maxWidth: 400,
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    padding: 16,
+    width: '90%',
+    maxWidth: 300,
   },
   modalTitle: {
-    ...theme.typography.heading,
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.md,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    marginBottom: 8,
   },
   modalText: {
-    ...theme.typography.body,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.lg,
+    fontSize: 16,
+    color: colors.textSecondary,
+    marginBottom: 16,
   },
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: theme.spacing.md,
+    gap: 16,
   },
   modalButton: {
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.borderRadius.button,
+    padding: 16,
+    borderRadius: 8,
   },
   cancelButton: {
-    backgroundColor: theme.colors.background,
-  },
-  confirmButton: {
-    backgroundColor: theme.colors.accentPrimary,
+    backgroundColor: colors.secondary,
   },
   cancelButtonText: {
-    ...theme.typography.button,
-    color: theme.colors.textPrimary,
+    fontSize: 16,
+    color: colors.white,
+  },
+  confirmButton: {
+    backgroundColor: colors.accent,
   },
   confirmButtonText: {
-    ...theme.typography.button,
-    color: theme.colors.white,
+    fontSize: 16,
+    color: colors.white,
   },
 });
 

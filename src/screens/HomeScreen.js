@@ -9,10 +9,11 @@ import {
   Dimensions,
   ActivityIndicator,
   FlatList,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../assets/styles/theme';
+import { colors } from '../assets/styles/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -46,6 +47,33 @@ const HomeScreen = ({ navigation }) => {
     avatar: 'https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20woman%20with%20blonde%20hair%20and%20blue%20eyes%20smiling%20at%20camera%2C%20neutral%20background%2C%20high%20quality%20portrait%20photography%2C%20soft%20lighting%2C%20centered%20composition&width=50&height=50&seq=avatar1&orientation=squarish',
   };
 
+  const recommendedTemplates = [
+    {
+      id: 1,
+      name: 'Fantasy Character',
+      image: 'https://readdy.ai/api/search-image?query=3D%20cartoon%20avatar%20of%20a%20fantasy%20character%20with%20elf%20ears%20and%20glowing%20eyes%2C%20digital%20art%20style%2C%20vibrant%20colors%2C%20clean%20background%2C%20high%20quality%20render%2C%20centered%20composition%2C%20professional%20lighting%2C%20character%20design&width=400&height=300&seq=template1&orientation=landscape',
+      uses: 1234,
+    },
+    {
+      id: 2,
+      name: 'Superhero',
+      image: 'https://readdy.ai/api/search-image?query=3D%20cartoon%20avatar%20of%20a%20superhero%20character%20with%20mask%20and%20cape%2C%20digital%20art%20style%2C%20vibrant%20colors%2C%20clean%20background%2C%20high%20quality%20render%2C%20centered%20composition%2C%20professional%20lighting%2C%20character%20design&width=400&height=300&seq=template2&orientation=landscape',
+      uses: 856,
+    },
+    {
+      id: 3,
+      name: 'Anime Style',
+      image: 'https://readdy.ai/api/search-image?query=3D%20cartoon%20avatar%20in%20anime%20style%20with%20big%20eyes%20and%20colorful%20hair%2C%20digital%20art%20style%2C%20vibrant%20colors%2C%20clean%20background%2C%20high%20quality%20render%2C%20centered%20composition%2C%20professional%20lighting%2C%20character%20design&width=400&height=300&seq=template3&orientation=landscape',
+      uses: 623,
+    },
+    {
+      id: 4,
+      name: 'Vintage Look',
+      image: 'https://readdy.ai/api/search-image?query=3D%20cartoon%20avatar%20in%20vintage%20style%20with%20sepia%20tones%20and%20classic%20hairstyle%2C%20digital%20art%20style%2C%20warm%20colors%2C%20clean%20background%2C%20high%20quality%20render%2C%20centered%20composition%2C%20professional%20lighting%2C%20character%20design&width=400&height=300&seq=template4&orientation=landscape',
+      uses: 456,
+    },
+  ];
+
   const feedPosts = [
     {
       id: 1,
@@ -59,15 +87,7 @@ const HomeScreen = ({ navigation }) => {
     // ... Add more feed posts here
   ];
 
-  const recommendedTemplates = [
-    {
-      id: 1,
-      image: 'https://readdy.ai/api/search-image?query=3D%20cartoon%20template%20for%20face%20swap%20with%20superhero%20features%2C%20digital%20art%20style%2C%20vibrant%20colors%2C%20clean%20background%2C%20high%20quality%20render%2C%20centered%20composition%2C%20professional%20lighting%2C%20character%20design&width=150&height=200&seq=template1&orientation=portrait',
-      name: 'Superhero',
-      uses: '12.5K',
-    },
-    // ... Add more templates here
-  ];
+
 
   const renderStoryItem = ({ item }) => (
     <View style={styles.storyItem}>
@@ -93,15 +113,15 @@ const HomeScreen = ({ navigation }) => {
         </View>
         <View style={styles.feedPostStats}>
           <View style={styles.feedPostStat}>
-            <Ionicons name="heart" size={12} color={theme.colors.textSecondary} />
+            <Ionicons name="heart" size={12} color={colors.textSecondary} />
             <Text style={styles.feedPostStatText}>{item.likes.toLocaleString()}</Text>
           </View>
           <View style={styles.feedPostStat}>
-            <Ionicons name="chatbubble" size={12} color={theme.colors.textSecondary} />
+            <Ionicons name="chatbubble" size={12} color={colors.textSecondary} />
             <Text style={styles.feedPostStatText}>{item.comments.toLocaleString()}</Text>
           </View>
           <TouchableOpacity style={styles.feedPostMore}>
-            <Ionicons name="ellipsis-horizontal" size={16} color={theme.colors.textSecondary} />
+            <Ionicons name="ellipsis-horizontal" size={16} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -111,11 +131,17 @@ const HomeScreen = ({ navigation }) => {
   const renderTemplateItem = ({ item }) => (
     <TouchableOpacity style={styles.templateItem}>
       <View style={styles.templateImageContainer}>
-        <Image source={{ uri: item.image }} style={styles.templateImage} />
+        <Image 
+          source={{ uri: item.image }} 
+          style={styles.templateImage} 
+          resizeMode="cover"
+          onError={(error) => console.error('Image error:', error)}
+          onLoad={() => console.log('Image loaded successfully')}
+        />
       </View>
       <View style={styles.templateInfo}>
         <Text style={styles.templateName}>{item.name}</Text>
-        <Text style={styles.templateUses}>{item.uses} uses</Text>
+        <Text style={styles.templateUses}>{item.uses.toLocaleString()} uses</Text>
       </View>
     </TouchableOpacity>
   );
@@ -150,140 +176,93 @@ const HomeScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTitle}>
-          <Text style={styles.headerTitleBlue}>FaceSwap</Text>
-          <Text style={styles.headerTitlePurple}>AI</Text>
-        </View>
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerButton}>
-            <Ionicons name="search" size={24} color={theme.colors.textSecondary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton}>
-            <Ionicons name="notifications" size={24} color={theme.colors.textSecondary} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       {/* Main Content */}
-      <ScrollView style={styles.content}>
-        {isLoading ? (
-          renderSkeletonLoader()
-        ) : (
-          <>
-            {/* Stories */}
-            <FlatList
-              data={storyItems}
-              renderItem={renderStoryItem}
-              keyExtractor={(item) => item.id.toString()}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.storiesContainer}
-            />
+      <View style={styles.content}>
+        <ScrollView style={styles.scrollContent}>
+          {isLoading ? (
+            renderSkeletonLoader()
+          ) : (
+            <>
+              {/* Stories */}
+              <FlatList
+                data={storyItems}
+                renderItem={renderStoryItem}
+                keyExtractor={(item) => item.id.toString()}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.storiesContainer}
+              />
 
-            {/* Featured Swap */}
-            <View style={styles.featuredSection}>
-              <Text style={styles.sectionTitle}>Featured Swap</Text>
-              <View style={styles.featuredCard}>
-                <Image source={{ uri: featuredSwap.image }} style={styles.featuredImage} />
-                <View style={styles.featuredOverlay}>
-                  <View style={styles.featuredInfo}>
-                    <Image source={{ uri: featuredSwap.avatar }} style={styles.featuredAvatar} />
-                    <View style={styles.featuredCreator}>
-                      <Text style={styles.featuredCreatorName}>{featuredSwap.creator}</Text>
-                      <View style={styles.featuredStats}>
-                        <View style={styles.featuredStat}>
-                          <Ionicons name="heart" size={12} color={theme.colors.white} />
-                          <Text style={styles.featuredStatText}>{featuredSwap.likes.toLocaleString()}</Text>
-                        </View>
-                        <View style={styles.featuredStat}>
-                          <Ionicons name="chatbubble" size={12} color={theme.colors.white} />
-                          <Text style={styles.featuredStatText}>{featuredSwap.comments.toLocaleString()}</Text>
+              {/* Featured Swap */}
+              <View style={styles.featuredSection}>
+                <Text style={styles.sectionTitle}>Featured Swap</Text>
+                <View style={styles.featuredCard}>
+                  <Image source={{ uri: featuredSwap.image }} style={styles.featuredImage} />
+                  <View style={styles.featuredOverlay}>
+                    <View style={styles.featuredInfo}>
+                      <Image source={{ uri: featuredSwap.avatar }} style={styles.featuredAvatar} />
+                      <View style={styles.featuredCreator}>
+                        <Text style={styles.featuredCreatorName}>{featuredSwap.creator}</Text>
+                        <View style={styles.featuredStats}>
+                          <View style={styles.featuredStat}>
+                            <Ionicons name="heart" size={12} color={colors.white} />
+                            <Text style={styles.featuredStatText}>{featuredSwap.likes.toLocaleString()}</Text>
+                          </View>
+                          <View style={styles.featuredStat}>
+                            <Ionicons name="chatbubble" size={12} color={colors.white} />
+                            <Text style={styles.featuredStatText}>{featuredSwap.comments.toLocaleString()}</Text>
+                          </View>
                         </View>
                       </View>
                     </View>
                   </View>
                 </View>
               </View>
-            </View>
 
-            {/* Feed Tabs */}
-            <View style={styles.tabsContainer}>
-              {['For You', 'Trending', 'Following'].map((tab) => (
-                <TouchableOpacity
-                  key={tab}
-                  style={[styles.tab, activeTab === tab && styles.activeTab]}
-                  onPress={() => setActiveTab(tab)}
-                >
-                  <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
-                    {tab}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+              {/* Feed Tabs */}
+              <View style={styles.tabsContainer}>
+                <FlatList
+                  data={['For You', 'Trending', 'Following']}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.tabsContent}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={[styles.tab, activeTab === item && styles.activeTab]}
+                      onPress={() => setActiveTab(item)}
+                    >
+                      <Text style={[styles.tabText, activeTab === item && styles.activeTabText]}>
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item) => item}
+                />
+              </View>
 
-            {/* Feed Grid */}
-            <View style={styles.feedGrid}>
-              {feedPosts.map((post) => renderFeedPost({ item: post }))}
-            </View>
+              {/* Feed Grid */}
+              <View style={styles.feedGrid}>
+                {feedPosts.map((post) => renderFeedPost({ item: post }))}
+              </View>
 
-            {/* Recommended Templates */}
-            <View style={styles.templatesSection}>
-              <Text style={styles.sectionTitle}>Recommended for You</Text>
-              <FlatList
-                data={recommendedTemplates}
-                renderItem={renderTemplateItem}
-                keyExtractor={(item) => item.id.toString()}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.templatesContainer}
-              />
-            </View>
-          </>
-        )}
-      </ScrollView>
-
-
-
-      {/* Tab Bar */}
-      <View style={styles.tabBar}>
-        {[
-          { icon: 'home', label: 'Home', active: true },
-          { icon: 'camera', label: 'Camera' },
-          { icon: 'images', label: 'Gallery' },
-          { icon: 'person', label: 'Profile' },
-        ].map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.tabItem}
-            onPress={() => {
-              if (item.label === 'Camera') {
-                navigation.navigate('Create');
-              } else if (item.label === 'Gallery') {
-                navigation.navigate('Gallery');
-              } else if (item.label === 'Profile') {
-                navigation.navigate('Profile');
-              }
-            }}
-          >
-            <Ionicons
-              name={item.icon}
-              size={24}
-              color={item.active ? theme.colors.accentPrimary : theme.colors.textSecondary}
-            />
-            <Text
-              style={[
-                styles.tabLabel,
-                item.active && styles.tabLabelActive,
-              ]}
-            >
-              {item.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              {/* Recommended Templates */}
+              <View style={styles.templatesSection}>
+                <Text style={styles.sectionTitle}>Recommended for You</Text>
+                <FlatList
+                  data={recommendedTemplates}
+                  renderItem={renderTemplateItem}
+                  keyExtractor={(item) => item.id.toString()}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.templatesContainer}
+                />
+              </View>
+            </>
+          )}
+        </ScrollView>
       </View>
+
     </SafeAreaView>
   );
 };
@@ -291,41 +270,46 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: colors.background,
+    paddingTop: Platform.OS === 'ios' ? 0 : 20, // Fixed status bar height for Android
   },
-  header: {
+  tabsContainer: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  tabsContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.textSecondary,
+    paddingHorizontal: 16,
   },
-  headerTitle: {
-    flexDirection: 'row',
+  tab: {
+    marginRight: 16,
+    padding: 8,
+    borderRadius: 16,
   },
-  headerTitleBlue: {
-    ...theme.typography.heading,
-    color: theme.colors.accentPrimary,
+  activeTab: {
+    backgroundColor: colors.accent,
   },
-  headerTitlePurple: {
-    ...theme.typography.heading,
-    color: theme.colors.secondary,
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
-  headerActions: {
-    flexDirection: 'row',
-    gap: theme.spacing.md,
-  },
-  headerButton: {
-    padding: theme.spacing.xs,
+  activeTabText: {
+    color: colors.white,
   },
   content: {
     flex: 1,
+    padding: 16,
+  },
+  scrollContent: {
+    paddingBottom: 100,
   },
   storiesContainer: {
-    padding: theme.spacing.md,
-    gap: theme.spacing.md,
+    padding: 16,
+    gap: 16,
   },
   storyItem: {
     alignItems: 'center',
@@ -335,225 +319,180 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
+    overflow: 'hidden',
     borderWidth: 2,
-    borderColor: theme.colors.accentPrimary,
-    padding: 2,
-    backgroundColor: theme.colors.white,
+    borderColor: colors.accent,
   },
   storyImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 30,
   },
   storyName: {
-    ...theme.typography.caption,
-    color: theme.colors.textPrimary,
-    marginTop: theme.spacing.xs,
-    textAlign: 'center',
+    fontSize: 12,
+    color: colors.textPrimary,
+    marginTop: 4,
   },
   featuredSection: {
-    padding: theme.spacing.md,
+    padding: 16,
   },
   sectionTitle: {
-    ...theme.typography.subheading,
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.md,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.textPrimary,
+    marginBottom: 16,
   },
   featuredCard: {
-    borderRadius: theme.borderRadius.card,
-    overflow: 'hidden',
-    ...theme.shadows.medium,
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   featuredImage: {
     width: '100%',
     height: 200,
+    borderRadius: 12,
   },
   featuredOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    justifyContent: 'flex-end',
-    padding: theme.spacing.md,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 16,
   },
   featuredInfo: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   featuredAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: theme.colors.white,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
   },
   featuredCreator: {
-    marginLeft: theme.spacing.sm,
+    flex: 1,
   },
   featuredCreatorName: {
-    ...theme.typography.button,
-    color: theme.colors.white,
+    fontSize: 16,
+    color: colors.white,
+    fontWeight: 'bold',
   },
   featuredStats: {
     flexDirection: 'row',
-    gap: theme.spacing.md,
+    marginTop: 8,
   },
   featuredStat: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.xs,
+    marginRight: 16,
   },
   featuredStatText: {
-    ...theme.typography.caption,
-    color: theme.colors.white,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: theme.colors.background,
-    padding: theme.spacing.xs,
-    margin: theme.spacing.md,
-    borderRadius: theme.borderRadius.button,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: theme.spacing.sm,
-    alignItems: 'center',
-    borderRadius: theme.borderRadius.button,
-  },
-  activeTab: {
-    backgroundColor: theme.colors.white,
-    ...theme.shadows.light,
-  },
-  tabText: {
-    ...theme.typography.button,
-    color: theme.colors.textSecondary,
-  },
-  activeTabText: {
-    color: theme.colors.accentPrimary,
-  },
-  feedGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: theme.spacing.md,
-    gap: theme.spacing.md,
+    marginLeft: 4,
+    color: colors.white,
   },
   feedPost: {
-    width: (width - theme.spacing.md * 3) / 2,
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.card,
-    overflow: 'hidden',
-    ...theme.shadows.light,
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    padding: 16,
+    marginVertical: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   feedPostImageContainer: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    overflow: 'hidden',
     position: 'relative',
   },
   feedPostImage: {
     width: '100%',
-    height: 160,
+    height: '100%',
   },
   templateBadge: {
     position: 'absolute',
-    top: theme.spacing.sm,
-    right: theme.spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.sm,
+    bottom: 8,
+    right: 8,
+    backgroundColor: colors.accent,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   templateBadgeText: {
-    ...theme.typography.caption,
-    color: theme.colors.white,
+    color: colors.white,
+    fontSize: 12,
   },
   feedPostContent: {
-    padding: theme.spacing.sm,
+    marginTop: 12,
   },
   feedPostHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.xs,
+    marginBottom: 8,
   },
   feedPostAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
   },
   feedPostCreator: {
-    ...theme.typography.caption,
-    color: theme.colors.textPrimary,
-    flex: 1,
+    fontSize: 14,
+    color: colors.textPrimary,
+    fontWeight: 'bold',
   },
   feedPostStats: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: theme.spacing.xs,
   },
   feedPostStat: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.xs,
+    marginRight: 16,
   },
   feedPostStatText: {
-    ...theme.typography.caption,
-    color: theme.colors.textSecondary,
+    marginLeft: 4,
+    color: colors.textSecondary,
   },
   feedPostMore: {
-    padding: theme.spacing.xs,
+    padding: 8,
   },
-  templatesSection: {
-    padding: theme.spacing.md,
-  },
-  templatesContainer: {
-    gap: theme.spacing.md,
-  },
-  templateItem: {
-    width: 128,
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.card,
-    overflow: 'hidden',
-    ...theme.shadows.light,
-  },
-  templateImageContainer: {
-    height: 160,
-  },
-  templateImage: {
-    width: '100%',
-    height: '100%',
-  },
-  templateInfo: {
-    padding: theme.spacing.sm,
-  },
-  templateName: {
-    ...theme.typography.button,
-    color: theme.colors.textPrimary,
-  },
-  templateUses: {
-    ...theme.typography.caption,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
-  },
-  tabBar: {
+  tabContainer: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.white,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.textSecondary,
+    borderTopColor: colors.border,
+    paddingVertical: 12,
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: theme.spacing.sm,
   },
   tabLabel: {
-    ...theme.typography.caption,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 4,
   },
   tabLabelActive: {
-    color: theme.colors.accentPrimary,
+    color: colors.accent,
   },
-  // Skeleton loader styles
   skeletonStories: {
-    flexDirection: 'row',
-    padding: theme.spacing.md,
-    gap: theme.spacing.md,
+    padding: 16,
+    gap: 16,
   },
   skeletonStoryItem: {
     alignItems: 'center',
@@ -563,51 +502,71 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: theme.colors.textSecondary,
+    backgroundColor: colors.textSecondary,
     opacity: 0.1,
   },
   skeletonText: {
     width: 40,
     height: 12,
-    backgroundColor: theme.colors.textSecondary,
+    backgroundColor: colors.textSecondary,
     opacity: 0.1,
-    borderRadius: theme.borderRadius.sm,
-    marginTop: theme.spacing.xs,
+    borderRadius: 8,
+    marginTop: 4,
   },
   skeletonFeatured: {
-    padding: theme.spacing.md,
+    padding: 16,
   },
   skeletonImage: {
     height: 200,
-    backgroundColor: theme.colors.textSecondary,
+    backgroundColor: colors.textSecondary,
     opacity: 0.1,
-    borderRadius: theme.borderRadius.card,
-    marginBottom: theme.spacing.sm,
+    borderRadius: 16,
+    marginBottom: 8,
   },
   skeletonTitle: {
     width: '60%',
-    height: 20,
-    backgroundColor: theme.colors.textSecondary,
+    height: 16,
+    backgroundColor: colors.textSecondary,
     opacity: 0.1,
-    borderRadius: theme.borderRadius.sm,
-    marginBottom: theme.spacing.xs,
+    borderRadius: 8,
+    marginBottom: 4,
   },
   skeletonSubtitle: {
     width: '40%',
-    height: 16,
-    backgroundColor: theme.colors.textSecondary,
+    height: 12,
+    backgroundColor: colors.textSecondary,
     opacity: 0.1,
-    borderRadius: theme.borderRadius.sm,
+    borderRadius: 8,
   },
   skeletonGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: theme.spacing.md,
-    gap: theme.spacing.md,
+    padding: 16,
+    gap: 16,
   },
   skeletonGridItem: {
-    width: (width - theme.spacing.md * 3) / 2,
+    width: '48%',
+  },
+  skeletonImage: {
+    height: 150,
+    backgroundColor: colors.textSecondary,
+    opacity: 0.1,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  skeletonTitle: {
+    width: '70%',
+    height: 14,
+    backgroundColor: colors.textSecondary,
+    opacity: 0.1,
+    borderRadius: 8,
+    marginBottom: 4,
+  },
+  skeletonSubtitle: {
+    width: '50%',
+    height: 12,
+    backgroundColor: colors.textSecondary,
+    opacity: 0.1,
+    borderRadius: 8,
   },
 });
 
-export default HomeScreen; 
+export default HomeScreen;
