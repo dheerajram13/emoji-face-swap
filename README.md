@@ -1,4 +1,4 @@
-# FaceSwap AI
+# FaceMoji
 
 A React Native application for creating and sharing emoji face swaps. Built with Expo and React Native.
 
@@ -23,8 +23,8 @@ A React Native application for creating and sharing emoji face swaps. Built with
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/emoji-face-swap.git
-cd emoji-face-swap
+git clone https://github.com/yourusername/face-moji.git
+cd face-moji
 ```
 
 2. Install dependencies:

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FaceSwap AI",
-    "slug": "emoji-face-swap",
+    "name": "FaceMoji",
+    "slug": "face-moji",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -19,16 +19,16 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Emoji Face Swap to access your camera to detect faces and apply emoji overlays."
+          "cameraPermission": "Allow FaceMoji to access your camera to detect faces and apply emoji overlays."
         }
       ],
       [
         "expo-media-library",
         {
-          "photosPermission": "Allow Emoji Face Swap to access your photos to save and share emoji-swapped images.",
-          "savePhotosPermission": "Allow Emoji Face Swap to save photos to your gallery."
+          "photosPermission": "Allow FaceMoji to access your photos to save and share emoji-swapped images.",
+          "savePhotosPermission": "Allow FaceMoji to save photos to your gallery."
         }
       ]
     ]
   }
-} 
+}

@@ -1,5 +1,6 @@
 {
-  "name": "emoji-face-swap",
+  "name": "face-moji",
+  "description": "FaceMoji - Create and share emoji face swaps with AI",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
