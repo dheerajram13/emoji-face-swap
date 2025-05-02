@@ -9,6 +9,7 @@ import CameraScreen from './src/screens/CameraScreen';
 import GalleryScreen from './src/screens/GalleryScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import CreateScreen from './src/screens/CreateScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,10 +35,10 @@ export default function App() {
         }}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Camera" component={CameraScreen} />
         <Stack.Screen name="Create" component={CreateScreen} />
         <Stack.Screen name="Gallery" component={GalleryScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

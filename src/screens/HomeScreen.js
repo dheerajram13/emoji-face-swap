@@ -245,20 +245,13 @@ const HomeScreen = ({ navigation }) => {
         )}
       </ScrollView>
 
-      {/* Create Button */}
-      <TouchableOpacity
-        style={styles.createButton}
-        onPress={() => navigation.navigate('Create')}
-      >
-        <Ionicons name="add" size={24} color={theme.colors.white} />
-      </TouchableOpacity>
+
 
       {/* Tab Bar */}
       <View style={styles.tabBar}>
         {[
           { icon: 'home', label: 'Home', active: true },
-          { icon: 'compass', label: 'Explore' },
-          { icon: 'add-circle', label: 'Create' },
+          { icon: 'camera', label: 'Camera' },
           { icon: 'images', label: 'Gallery' },
           { icon: 'person', label: 'Profile' },
         ].map((item, index) => (
@@ -266,10 +259,12 @@ const HomeScreen = ({ navigation }) => {
             key={index}
             style={styles.tabItem}
             onPress={() => {
-              if (item.label === 'Create') {
+              if (item.label === 'Camera') {
                 navigation.navigate('Create');
               } else if (item.label === 'Gallery') {
                 navigation.navigate('Gallery');
+              } else if (item.label === 'Profile') {
+                navigation.navigate('Profile');
               }
             }}
           >
@@ -534,18 +529,6 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.textSecondary,
     marginTop: theme.spacing.xs,
-  },
-  createButton: {
-    position: 'absolute',
-    bottom: 80,
-    right: theme.spacing.md,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: theme.colors.accentPrimary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...theme.shadows.medium,
   },
   tabBar: {
     flexDirection: 'row',

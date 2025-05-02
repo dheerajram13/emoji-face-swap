@@ -48,6 +48,12 @@ const SettingsScreen = ({ navigation }) => {
         >
           <Ionicons name="arrow-back" size={24} color={theme.colors.textPrimary} />
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="close" size={24} color={theme.colors.textPrimary} />
+        </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
       </View>
 
@@ -94,17 +100,21 @@ const SettingsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: theme.spacing.lg,
+    justifyContent: 'space-between',
+    padding: theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.textSecondary + '20',
+    borderBottomColor: theme.colors.border,
   },
   backButton: {
-    padding: theme.spacing.sm,
+    marginRight: theme.spacing.md,
+  },
+  closeButton: {
+    marginLeft: theme.spacing.md,
   },
   title: {
     ...theme.typography.heading,

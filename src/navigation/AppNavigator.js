@@ -9,6 +9,7 @@ import CameraScreen from '../screens/CameraScreen';
 import GalleryScreen from '../screens/GalleryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import EmojiStyleScreen from '../screens/EmojiStyleScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,10 +25,11 @@ const AppNavigator = () => {
       >
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Camera" component={CameraScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Create" component={CreateScreen} />
         <Stack.Screen name="Gallery" component={GalleryScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
-        <Stack.Screen name="EmojiStyle" component={EmojiStyleScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
