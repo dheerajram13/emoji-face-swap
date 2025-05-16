@@ -9,70 +9,27 @@ import {
   Easing,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../assets/styles/theme';
 
 const { width, height } = Dimensions.get('window');
 
-const FloatingEmoji = ({ emoji, top, left, delay, size }) => {
-  const [animation] = useState(new Animated.Value(0));
-
-  useEffect(() => {
-    const startAnimation = () => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(animation, {
-            toValue: 1,
-            duration: 4000 + Math.random() * 3000,
-            delay: delay * 1000,
-            easing: Easing.linear,
-            useNativeDriver: true,
-          }),
-          Animated.timing(animation, {
-            toValue: 0,
-            duration: 4000 + Math.random() * 3000,
-            easing: Easing.linear,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    };
-
-    startAnimation();
-  }, []);
-
-  const translateY = animation.interpolate({
-    inputRange: [0, 0.25, 0.5, 0.75, 1],
-    outputRange: [0, -15, 0, 15, 0],
-  });
-
-  const rotate = animation.interpolate({
-    inputRange: [0, 0.25, 0.5, 0.75, 1],
-    outputRange: ['0deg', '5deg', '0deg', '-5deg', '0deg'],
-  });
-
-  return (
-    <Animated.View
-      style={[
-        styles.floatingEmoji,
-        {
-          top: `${top}`,
-          left: `${left}`,
-          transform: [{ translateY }, { rotate }],
-        },
-      ]}
-    >
-      <Text style={[styles.emojiText, { fontSize: size === 'text-2xl' ? 24 : 20 }]}>
-        {emoji}
-      </Text>
-    </Animated.View>
-  );
-};
-
 const SplashScreen = ({ onFinish }) => {
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [bounceAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(0.95));
 
   useEffect(() => {
+    // Loading progress animation
+    const timer = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          onFinish();
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 150);
+
     // Bounce animation
     Animated.loop(
       Animated.sequence([
@@ -109,29 +66,15 @@ const SplashScreen = ({ onFinish }) => {
       ])
     ).start();
 
-    // Auto navigate after 3.5 seconds
-    const timer = setTimeout(() => {
-      onFinish();
-    }, 3500);
-
-    return () => clearTimeout(timer);
+    return () => {
+      clearInterval(timer);
+    };
   }, []);
 
   const translateY = bounceAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [0, -10],
   });
-
-  const floatingEmojis = [
-    { id: 1, emoji: '😀', top: '10%', left: '15%', delay: 0, size: 'text-xl' },
-    { id: 2, emoji: '😍', top: '25%', left: '80%', delay: 0.5, size: 'text-2xl' },
-    { id: 3, emoji: '🤣', top: '70%', left: '20%', delay: 1, size: 'text-xl' },
-    { id: 4, emoji: '😎', top: '85%', left: '75%', delay: 1.5, size: 'text-2xl' },
-    { id: 5, emoji: '🥳', top: '40%', left: '10%', delay: 2, size: 'text-xl' },
-    { id: 6, emoji: '😇', top: '55%', left: '85%', delay: 2.5, size: 'text-2xl' },
-    { id: 7, emoji: '🤩', top: '15%', left: '60%', delay: 3, size: 'text-xl' },
-    { id: 8, emoji: '😜', top: '65%', left: '40%', delay: 3.5, size: 'text-2xl' },
-  ];
 
   return (
     <LinearGradient
@@ -140,11 +83,28 @@ const SplashScreen = ({ onFinish }) => {
       end={{ x: 1, y: 1 }}
       style={styles.container}
     >
-      {floatingEmojis.map((item) => (
-        <FloatingEmoji key={item.id} {...item} />
-      ))}
+      {/* Decorative Bubbles */}
+      <View style={[styles.bubble, { left: '20%', top: '20%' }]}>
+        <LinearGradient
+          colors={['#fff79a', '#fff3e0']}
+          style={styles.bubbleInner}
+        />
+      </View>
+      <View style={[styles.bubble, { right: '20%', top: '40%' }]}>
+        <LinearGradient
+          colors={['#e1bee7', '#f3e5f5']}
+          style={styles.bubbleInner}
+        />
+      </View>
+      <View style={[styles.bubble, { bottom: '20%', left: '40%' }]}>
+        <LinearGradient
+          colors={['#fff3e0', '#e1bee7']}
+          style={styles.bubbleInner}
+        />
+      </View>
 
       <View style={styles.content}>
+        {/* Logo */}
         <Animated.View
           style={[
             styles.logoContainer,
@@ -154,16 +114,24 @@ const SplashScreen = ({ onFinish }) => {
           ]}
         >
           <View style={styles.logoWrapper}>
-            <Image
-              source={{
-                uri: 'https://readdy.ai/api/search-image?query=A%20modern%20app%20logo%20design%20showing%20a%20smooth%20transition%20between%20a%20yellow%20smiley%20emoji%20face%20and%20a%20human%20face%20silhouette%2C%20digital%20art%20style%2C%20gradient%20background%2C%20centered%20composition%2C%20high%20quality%2C%20minimalist%20design%2C%20professional%20app%20icon&width=400&height=400&seq=emoji-face-1&orientation=squarish',
-              }}
-              style={styles.logo}
-              resizeMode="cover"
-            />
+            <LinearGradient
+              colors={['#ffde59', '#ff7eb3', '#7ec8e3']}
+              style={styles.logoGradient}
+            >
+              <View style={styles.logoInner}>
+                <Image
+                  source={{
+                    uri: 'https://readdy.ai/api/search-image?query=A%20modern%20app%20logo%20design%20showing%20a%20smooth%20transition%20between%20a%20yellow%20smiley%20emoji%20face%20and%20a%20human%20face%20silhouette%2C%20digital%20art%20style%2C%20gradient%20background%2C%20centered%20composition%2C%20high%20quality%2C%20minimalist%20design%2C%20professional%20app%20icon&width=400&height=400&seq=emoji-face-1&orientation=squarish',
+                  }}
+                  style={styles.logo}
+                  resizeMode="cover"
+                />
+              </View>
+            </LinearGradient>
           </View>
         </Animated.View>
 
+        {/* App Name */}
         <Animated.View
           style={[
             styles.titleContainer,
@@ -172,10 +140,36 @@ const SplashScreen = ({ onFinish }) => {
             },
           ]}
         >
-          <Text style={styles.title}>Emoji</Text>
-          <Text style={styles.title}>Face Swap</Text>
+          <Text style={styles.title}>EmojiLife</Text>
+          <Text style={styles.tagline}>Bringing emoji expressions to life</Text>
         </Animated.View>
+
+        {/* Loading Indicator */}
+        <View style={styles.loadingContainer}>
+          <Animated.View
+            style={[
+              styles.loadingIndicator,
+              {
+                transform: [{ rotate: bounceAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0deg', '360deg']
+                }) }],
+              },
+            ]}
+          >
+            <LinearGradient
+              colors={['#ff7eb3', '#7ec8e3', '#ffde59']}
+              style={styles.loadingIndicatorInner}
+            />
+          </Animated.View>
+          <Text style={styles.loadingText}>
+            {loadingProgress}%
+          </Text>
+        </View>
       </View>
+
+      {/* iPhone Home Indicator */}
+      <View style={styles.homeIndicator} />
     </LinearGradient>
   );
 };
@@ -190,19 +184,25 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
   },
-  floatingEmoji: {
+  bubble: {
     position: 'absolute',
+    borderRadius: 100,
+    opacity: 0.6,
   },
-  emojiText: {
-    fontSize: 24,
+  bubbleInner: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 100,
   },
   logoContainer: {
     width: 192,
     height: 192,
-    backgroundColor: theme.colors.white,
+    marginBottom: 32,
+    backgroundColor: 'white',
     borderRadius: 96,
-    shadowColor: theme.colors.black,
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -210,7 +210,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
     elevation: 8,
-    marginBottom: theme.spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -220,19 +219,62 @@ const styles = StyleSheet.create({
     borderRadius: 80,
     overflow: 'hidden',
   },
+  logoGradient: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 80,
+  },
+  logoInner: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 80,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   logo: {
     width: '100%',
     height: '100%',
   },
   titleContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: theme.colors.white,
-    letterSpacing: 1,
+    color: '#333',
+    marginBottom: 8,
   },
+  tagline: {
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 32,
+  },
+  loadingContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 4,
+    borderColor: 'transparent',
+    borderStyle: 'solid',
+    borderTopColor: '#ff7eb3',
+    borderLeftColor: '#7ec8e3',
+    animation: 'spin 2s linear infinite',
+  },
+  loadingIndicator: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 24,
+  },
+  homeIndicator: {
+    width: 128,
+    height: 4,
+    backgroundColor: '#333',
+    borderRadius: 2,
+    marginBottom: 20,
+  }
 });
 
-export default SplashScreen; 
+export default SplashScreen;

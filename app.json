@@ -14,7 +14,11 @@
     "android": {
       "package": "com.faceswapai.app"
     },
-    "web": {},
+    "web": {
+      "bundler": {
+        "port": 19600
+      }
+    },
     "plugins": [
       [
         "expo-camera",
