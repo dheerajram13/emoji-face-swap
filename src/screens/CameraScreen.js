@@ -8,10 +8,12 @@ import {
   Image,
   Dimensions,
   Platform,
+  SafeAreaView,
+  StatusBar
 } from 'react-native';
 import { Camera } from 'expo-camera';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { API } from '../config/api';
 import { colors } from '../assets/styles/colors';
 
 const { width } = Dimensions.get('window');
@@ -23,6 +25,8 @@ const CameraScreen = ({ navigation }) => {
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isFaceDetected, setIsFaceDetected] = useState(false);
   const [hasPermission, setHasPermission] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState(null);
 
   const cameraRef = useRef(null);
 
@@ -58,23 +62,64 @@ const CameraScreen = ({ navigation }) => {
   const capturePhoto = async () => {
     if (cameraRef.current) {
       try {
+        setIsProcessing(true);
+        setError(null);
+        
         const photo = await cameraRef.current.takePictureAsync({
-          quality: 1,
+          quality: 0.8,
           base64: true,
         });
-        setCapturedPhoto(photo.uri);
+        
+        // Process the captured photo
+        await processCapturedPhoto(photo.uri);
+        
       } catch (error) {
         console.error('Error capturing photo:', error);
+        setError('Failed to capture photo. Please try again.');
+        setIsProcessing(false);
       }
+    }
+  };
+  
+  const processCapturedPhoto = async (photoUri) => {
+    try {
+      // First detect faces
+      const detectionResult = await API.detectFaces(photoUri);
+      
+      if (!detectionResult.faces || detectionResult.faces.length === 0) {
+        throw new Error('No faces detected in the photo');
+      }
+      
+      // If face is detected, set the photo
+      setCapturedPhoto(photoUri);
+      
+    } catch (error) {
+      console.error('Error processing photo:', error);
+      setError(error.message || 'Failed to process photo');
+      throw error;
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const retakePhoto = () => {
     setCapturedPhoto(null);
+    setError(null);
   };
 
   const usePhoto = () => {
-    navigation.navigate('Create', { photoUri: capturedPhoto });
+    if (capturedPhoto) {
+      navigation.navigate('Create', { photoUri: capturedPhoto });
+    }
+  };
+  
+  const handleRetry = () => {
+    setError(null);
+    if (capturedPhoto) {
+      processCapturedPhoto(capturedPhoto);
+    } else {
+      capturePhoto();
+    }
   };
 
   const getFlashIcon = () => {
@@ -94,9 +139,53 @@ const CameraScreen = ({ navigation }) => {
     return <View style={styles.container} />;
   }
 
+  // Render error state
+  if (error) {
+    return (
+      <View style={styles.controls}>
+        <TouchableOpacity 
+          style={[styles.controlButton, isProcessing && styles.disabledButton]} 
+          onPress={toggleCameraMode}
+          disabled={isProcessing}
+        >
+          <Ionicons 
+            name="camera-reverse" 
+            size={32} 
+            color={isProcessing ? colors.gray : 'white'} 
+          />
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[styles.captureButton, isProcessing && styles.captureButtonDisabled]} 
+          onPress={capturePhoto}
+          disabled={isProcessing}
+        >
+          {isProcessing ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <View style={styles.captureButtonInner} />
+          )}
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[styles.controlButton, isProcessing && styles.disabledButton]} 
+          onPress={toggleFlashMode}
+          disabled={isProcessing}
+        >
+          <Ionicons 
+            name={getFlashIcon()} 
+            size={32} 
+            color={isProcessing ? colors.gray : 'white'} 
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   if (hasPermission === false) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, styles.centerContent]}>
+        <Ionicons name="camera-off" size={60} color={colors.gray} style={styles.errorIcon} />
         <Text style={styles.errorText}>No access to camera</Text>
       </View>
     );
@@ -133,71 +222,47 @@ const CameraScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Camera</Text>
-        <TouchableOpacity
-          style={[
-            styles.flashButton,
-            flashMode === 'on' && styles.flashButtonActive,
-          ]}
-          onPress={toggleFlashMode}
-        >
-          <Ionicons
-            name={getFlashIcon()}
-            size={24}
-            color={colors.textPrimary}
-          />
-        </TouchableOpacity>
-      </View>
-
+      <StatusBar barStyle="light-content" />
       <View style={styles.cameraContainer}>
-        {capturedPhoto ? (
-          <Image source={{ uri: capturedPhoto }} style={styles.preview} />
-        ) : (
-          <Camera
-            ref={cameraRef}
-            style={styles.camera}
-            type={cameraMode === 'front' ? 'front' : 'back'}
-            flashMode={flashMode}
-            onCameraReady={() => setIsCameraReady(true)}
-          >
-            <View style={styles.faceGuidelines}>
-              <View
-                style={[
-                  styles.faceCircle,
-                  isFaceDetected && styles.faceCircleDetected,
-                ]}
+        <Camera
+          style={styles.camera}
+          type={cameraMode === 'front' ? Camera.Constants.Type.front : Camera.Constants.Type.back}
+          flashMode={flashMode}
+          ref={cameraRef}
+          onCameraReady={() => setIsCameraReady(true)}
+          onMountError={(error) => {
+            console.error('Camera mount error:', error);
+            setError('Failed to load camera. Please restart the app.');
+          }}
+        >
+          <View style={styles.faceGuidelines}>
+            <View style={[
+              styles.faceCircle,
+              isFaceDetected && styles.faceCircleDetected,
+            ]} />
+          </View>
+
+          {!isFaceDetected && (
+            <View style={styles.faceDetectionStatus}>
+              <Ionicons
+                name="search"
+                size={16}
+                color="white"
+                style={styles.statusIcon}
               />
+              <Text style={styles.statusText}>
+                Position your face in the circle
+              </Text>
             </View>
+          )}
 
-            {!isFaceDetected && (
-              <View style={styles.faceDetectionStatus}>
-                <Ionicons
-                  name="search"
-                  size={16}
-                  color={colors.textPrimary}
-                  style={styles.statusIcon}
-                />
-                <Text style={styles.statusText}>
-                  Position your face in the circle
-                </Text>
-              </View>
-            )}
-
-            {!isCameraReady && (
-              <View style={styles.loadingOverlay}>
-                <ActivityIndicator size="large" color={colors.textPrimary} />
-                <Text style={styles.loadingText}>Initializing camera...</Text>
-              </View>
-            )}
-          </Camera>
-        )}
+          {!isCameraReady && (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="large" color="white" />
+              <Text style={styles.loadingText}>Initializing camera...</Text>
+            </View>
+          )}
+        </Camera>
       </View>
 
       <View style={styles.controls}>
@@ -207,6 +272,7 @@ const CameraScreen = ({ navigation }) => {
               style={styles.retakeButton}
               onPress={retakePhoto}
             >
+              <Ionicons name="refresh" size={24} color="white" />
               <Text style={styles.retakeButtonText}>Retake</Text>
             </TouchableOpacity>
 
@@ -214,32 +280,47 @@ const CameraScreen = ({ navigation }) => {
               style={styles.useButton}
               onPress={usePhoto}
             >
+              <Ionicons name="checkmark" size={24} color="white" />
               <Text style={styles.useButtonText}>Use Photo</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.cameraControls}>
             <TouchableOpacity
-              style={styles.flipButton}
+              style={[styles.controlButton, isProcessing && styles.disabledButton]}
               onPress={toggleCameraMode}
+              disabled={isProcessing}
             >
               <Ionicons
                 name="camera-reverse"
-                size={24}
-                color={colors.textPrimary}
+                size={28}
+                color="white"
               />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.captureButton}
+              style={[styles.captureButton, isProcessing && styles.captureButtonDisabled]}
               onPress={capturePhoto}
+              disabled={isProcessing}
             >
-              <View style={styles.captureButtonInner} />
+              {isProcessing ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <View style={styles.captureButtonInner} />
+              )}
             </TouchableOpacity>
 
-            <View style={styles.flashModeIndicator}>
-              <Text style={styles.flashModeText}>{flashMode}</Text>
-            </View>
+            <TouchableOpacity
+              style={[styles.controlButton, isProcessing && styles.disabledButton]}
+              onPress={toggleFlashMode}
+              disabled={isProcessing}
+            >
+              <Ionicons
+                name={getFlashIcon()}
+                size={28}
+                color={isProcessing ? colors.gray : 'white'}
+              />
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -250,7 +331,136 @@ const CameraScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: 'black',
+  },
+  cameraContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  camera: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorIcon: {
+    marginBottom: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'white',
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  faceGuidelines: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  faceCircle: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  faceCircleDetected: {
+    borderColor: colors.accent,
+  },
+  faceDetectionStatus: {
+    position: 'absolute',
+    top: '70%',
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  statusIcon: {
+    marginBottom: 8,
+  },
+  statusText: {
+    color: 'white',
+    fontSize: 14,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: 'white',
+    marginTop: 10,
+  },
+  controls: {
+    padding: 20,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+  },
+  previewControls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  retakeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  useButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 25,
+    backgroundColor: colors.accent,
+  },
+  retakeButtonText: {
+    color: 'white',
+    marginLeft: 8,
+    fontWeight: '600',
+  },
+  useButtonText: {
+    color: 'white',
+    marginLeft: 8,
+    fontWeight: '600',
+  },
+  cameraControls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  controlButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  captureButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 5,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  captureButtonInner: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'white',
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  captureButtonDisabled: {
+    opacity: 0.7,
+    backgroundColor: colors.gray,
   },
   header: {
     flexDirection: 'row',

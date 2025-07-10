@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,14 @@ import {
   Modal,
   Alert,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import Slider from '@react-native-community/slider';
+import { API } from '../config/api';
 import { colors } from '../assets/styles/colors';
 
 const { width } = Dimensions.get('window');
@@ -24,6 +27,8 @@ const CreateScreen = ({ navigation, route }) => {
   const [selectedEmoji, setSelectedEmoji] = useState(1);
   const [previewReady, setPreviewReady] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [showSplitView, setShowSplitView] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
@@ -32,6 +37,7 @@ const CreateScreen = ({ navigation, route }) => {
     expressionMatch: 60,
     colorAdjustment: 50,
   });
+  const [refreshing, setRefreshing] = useState(false);
 
   const emojis = [
     { id: 1, emoji: '😀' },
@@ -46,52 +52,102 @@ const CreateScreen = ({ navigation, route }) => {
 
   const handlePhotoUpload = async () => {
     try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert("Permission required", "Please grant permission to access photos.");
+        return;
+      }
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 1,
+        quality: 0.8,
       });
 
       if (!result.canceled) {
-        setSelectedPhoto(result.assets[0].uri);
-        setIsProcessing(true);
-        setTimeout(() => {
-          setIsProcessing(false);
-          setPreviewReady(true);
-        }, 1500);
+        await processImage(result.assets[0].uri);
       }
     } catch (error) {
       console.error('Error picking image:', error);
+      setError('Failed to select image. Please try again.');
     }
   };
 
   const handleTakePhoto = async () => {
     try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert("Camera permission required", "Please grant camera permission to take photos.");
+        return;
+      }
+
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 1,
+        quality: 0.8,
       });
 
       if (!result.canceled) {
-        setSelectedPhoto(result.assets[0].uri);
-        setIsProcessing(true);
-        setTimeout(() => {
-          setIsProcessing(false);
-          setPreviewReady(true);
-        }, 1500);
+        await processImage(result.assets[0].uri);
       }
     } catch (error) {
       console.error('Error taking photo:', error);
+      setError('Failed to take photo. Please try again.');
+    }
+  };
+
+  const processImage = async (uri) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // First detect faces
+      const detectionResult = await API.detectFaces(uri);
+      
+      if (!detectionResult.faces || detectionResult.faces.length === 0) {
+        throw new Error('No faces detected in the image');
+      }
+      
+      // Then process with emoji
+      const emojiConfig = {
+        emojiId: selectedEmoji,
+        ...sliders
+      };
+      
+      const processedImage = await API.processImage(uri, emojiConfig);
+      
+      // Create a local URI for the processed image
+      const localUri = `${FileSystem.cacheDirectory}processed_${Date.now()}.jpg`;
+      await FileSystem.writeAsStringAsync(localUri, processedImage, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      
+      setSelectedPhoto(localUri);
+      setPreviewReady(true);
+    } catch (error) {
+      console.error('Error processing image:', error);
+      setError(error.message || 'Failed to process image');
+    } finally {
+      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
   const handleSliderChange = (value, sliderName) => {
-    setSliders({
+    const newSliders = {
       ...sliders,
       [sliderName]: value,
-    });
+    };
+    
+    setSliders(newSliders);
+    
+    // If we have a photo and preview is ready, reprocess with new settings
+    if (selectedPhoto && previewReady) {
+      processImage(selectedPhoto);
+    }
   };
 
   const resetSliders = () => {
@@ -139,6 +195,63 @@ const CreateScreen = ({ navigation, route }) => {
     setPendingNavigation(null);
   };
 
+  const retakePhoto = () => {
+    setSelectedPhoto(null);
+    setPreviewReady(false);
+    setError(null);
+  };
+
+  const handleRetry = () => {
+    setError(null);
+    if (selectedPhoto) {
+      processImage(selectedPhoto);
+    }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    if (selectedPhoto) {
+      processImage(selectedPhoto).finally(() => setRefreshing(false));
+    } else {
+      setRefreshing(false);
+    }
+  };
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Ionicons name="warning" size={60} color={colors.danger} style={styles.errorIcon} />
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={handleRetry}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.retryButtonText}>Try Again</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (hasPermission === false) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Ionicons name="camera-off" size={60} color={colors.gray} style={styles.errorIcon} />
+        <Text style={styles.errorText}>No access to camera</Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => handleNavigation('Home')}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -154,7 +267,7 @@ const CreateScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView style={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View style={styles.photoInputContainer}>
           {!selectedPhoto ? (
             <TouchableOpacity
@@ -168,9 +281,12 @@ const CreateScreen = ({ navigation, route }) => {
           ) : (
             <View style={styles.photoPreview}>
               <Image source={{ uri: selectedPhoto }} style={styles.previewImage} />
-              {isProcessing && (
-                <View style={styles.processingOverlay}>
-                  <ActivityIndicator size="large" color={colors.white} />
+              {(isProcessing || isLoading) && (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={colors.primary} />
+                  <Text style={styles.loadingText}>
+                    {isProcessing ? 'Processing...' : 'Applying changes...'}
+                  </Text>
                 </View>
               )}
             </View>
@@ -327,6 +443,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorIcon: {
+    marginBottom: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: colors.danger,
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  retryButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    minWidth: 150,
+    alignItems: 'center',
+  },
+  retryButtonText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',

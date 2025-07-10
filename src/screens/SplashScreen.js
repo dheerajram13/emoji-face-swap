@@ -23,7 +23,9 @@ const SplashScreen = ({ onFinish }) => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
           clearInterval(timer);
-          onFinish();
+          if (onFinish) {
+            onFinish();
+          }
           return 100;
         }
         return prev + 5;
